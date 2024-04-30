@@ -10,8 +10,22 @@ export default function Mainpage() {
     const [currecyNames, setCurrencyNames] = useState([]);
 
     //handleSubmit methods
-    const handleSubmit = (e)=>{
+    const handleSubmit =async (e)=>{
         e.preventDefault();
+        try {
+            const response=await axios.get("http://localhost:5000/convert",{
+            params:{ 
+                date,
+                sourceCurrency,
+                targetCurrency,
+                amountInSourceCurrency
+                }, });
+
+                setAmountInSourceCurrency(response.data);
+
+        } catch (err) {
+            console.error(err);
+        }
         console.log(
             date,
             setSourceCurrency,
@@ -26,10 +40,10 @@ export default function Mainpage() {
         const getCurrencyNames = async() =>{
             try{
                 const response=await axios.get(
-                    "http://localhost:5000/getAll"
+                    "http://localhost:5000/getAllCurrencies"
                 );
                 setCurrencyNames(response.data);
-            }catch(err){
+            }catch(err){ 
             console.error(err);
             }
         };
@@ -74,17 +88,20 @@ export default function Mainpage() {
                                 {Object.keys(currecyNames).map((currecy) =>(
                                    <option className='p-1' key={currecy} value={currecy}>
                                     {currecyNames[currecy]}
-                                   </option> 
+                                   </option>
                                 ) )}
                              </select>
-
                             <label htmlFor={targetCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Targer Currency</label>
                             <select onChange={(e)=>setTargetCurrency(e.target.value)}
-                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light"
+                             className="shadow-sm bg-gray-50 borderborder-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light"
                             name='targetCurrency' id='targetCurrency'value={targetCurrency}
                             >   
                                 <option value="">Select Target Currency</option>
-                                <option value="">asd</option>
+                                {Object.keys(currecyNames).map((currecy) =>(
+                                   <option className='p-1' key={currecy} value={currecy}>
+                                    {currecyNames[currecy]}
+                                   </option>
+                                ) )}
                              </select>
 
                             <label htmlFor={amountInSourceCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Amount in Source Currency</label>
@@ -101,6 +118,7 @@ export default function Mainpage() {
                 </form>
             </section>
         </div>
+        {amountInTargerCurrency}
     </div>
    
   );
