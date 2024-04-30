@@ -1,14 +1,17 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import axios from "axios";
 export default function Mainpage() {
     //states for the from feilds
-    const[date,setDate]=useStates(null); 
+    const[date,setDate]=useState(null); 
     const[sourceCurrency, setSourceCurrency]=useState("");
     const[targetCurrency,setTargetCurrency]=useState("");
     const[amountInSourceCurrency,setAmountInSourceCurrency]=useState(0);
     const[amountInTargerCurrency,setAmountInTargetCurrency]=useState(0);
+    const [currecyNames, setCurrencyNames] = useState([]);
 
-    const handleSubmit _()=>{
+    //handleSubmit methods
+    const handleSubmit = (e)=>{
+        e.preventDefault();
         console.log(
             date,
             setSourceCurrency,
@@ -16,8 +19,24 @@ export default function Mainpage() {
             targetCurrency,
             amountInSourceCurrency
         );
-    }
-  return (
+    };
+    
+    //gell all currecy names
+    useEffect(()=>{
+        const getCurrencyNames = async() =>{
+            try{
+                const response=await axios.get(
+                    "http://localhost:5000/getAll"
+                );
+                setCurrencyNames(response.data);
+            }catch(err){
+            console.error(err);
+            }
+        };
+        getCurrencyNames();
+        } , [])
+  
+    return (
     <div>
         <h1 className="lg:mx-32 text-5xl font-bold text-green-500">Covert Your Currencis Today</h1>
         <p className='lg:mx-32 opacity-40 py-6'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -32,24 +51,31 @@ export default function Mainpage() {
                 <form onSubmit={handleSubmit} >
                     
                   <div className="mb-5">
+
                             <label htmlFor={date} 
-                            onChange={(e)=setDate(e.target.value)}
+                            
                             className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Date</label>
+                            
                             <input type="date" id={date}
+                            onChange={(e)=>setDate(e.target.value)}
                             name={date} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light" 
                            
                              required />
 
 
                             <label htmlFor='sourceCurrency'
-                            type="Date" id={sourceCurrency} value={sourceCurrency} name={sourceCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Source Currency</label>
+                             id={sourceCurrency} value={sourceCurrency} name={sourceCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Source Currency</label>
                             
                             <select
                             onChange={(e) =>setSourceCurrency(e.target.value)} 
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light" 
                             >
                                 <option value="">Select Source Currency</option>
-                                <option value="">asd</option>
+                                {Object.keys(currecyNames).map((currecy) =>(
+                                   <option className='p-1' key={currecy} value={currecy}>
+                                    {currecyNames[currecy]}
+                                   </option> 
+                                ) )}
                              </select>
 
                             <label htmlFor={targetCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Targer Currency</label>
@@ -79,4 +105,3 @@ export default function Mainpage() {
    
   );
 }
-
