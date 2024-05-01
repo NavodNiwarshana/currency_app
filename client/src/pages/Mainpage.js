@@ -6,22 +6,26 @@ export default function Mainpage() {
     const[sourceCurrency, setSourceCurrency]=useState("");
     const[targetCurrency,setTargetCurrency]=useState("");
     const[amountInSourceCurrency,setAmountInSourceCurrency]=useState(0);
-    const[amountInTargerCurrency,setAmountInTargetCurrency]=useState(0);
-    const [currecyNames, setCurrencyNames] = useState([]);
+    const[amountInTargetCurrency,setAmountInTargetCurrency]=useState(0);
+    const [currencyNames, setCurrencyNames] = useState([]);
+    const [loading, setLoading] =useState(true);
 
     //handleSubmit methods
     const handleSubmit =async (e)=>{
         e.preventDefault();
+        console.log(date,sourceCurrency,targetCurrency,amountInSourceCurrency,amountInTargetCurrency );
         try {
             const response=await axios.get("http://localhost:5000/convert",{
             params:{ 
                 date,
                 sourceCurrency,
                 targetCurrency,
-                amountInSourceCurrency
+                amountInSourceCurrency,
                 }, });
 
-                setAmountInSourceCurrency(response.data);
+                //setAmountInSourceCurrency(response.data);
+                setAmountInTargetCurrency(response.data);//chat gpt
+                setLoading(false);
 
         } catch (err) {
             console.error(err);
@@ -31,7 +35,7 @@ export default function Mainpage() {
             setSourceCurrency,
             targetCurrency,
             targetCurrency,
-            amountInSourceCurrency
+            
         );
     };
     
@@ -53,12 +57,11 @@ export default function Mainpage() {
     return (
     <div>
         <h1 className="lg:mx-32 text-5xl font-bold text-green-500">Covert Your Currencis Today</h1>
-        <p className='lg:mx-32 opacity-40 py-6'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-           Sed mattis nec orci at venenatis. In vestibulum mi sit amet
-           quam facilisis fermentum. Praesent finibus, nibh nec luctus gravida, 
-           nisi dolor lacinia nisl, eu cursus sem magna ut nibh. Sed volutpat augue 
-           et blandit sodales. Duis in sollicitudin nibh. Duis auctor enim aliquet elit
-            porta pharetra.
+        <p className='lg:mx-32 opacity-40 py-6'>Welcome to "Convert Your Currencies Today"! This application allows you
+        to easily convert currencies based on the latest exchange rates. Whether
+        you're planning a trip, managing your finances, or simply curious about
+        the value of your money in different currencies, this tool is here to
+        help.
            </p>
         <div className='mt-5 flex items-center justify-center flex-co'>
             <section className="w-full lg:w-1/2">
@@ -77,29 +80,37 @@ export default function Mainpage() {
                              required />
 
 
-                            <label htmlFor='sourceCurrency'
-                             id={sourceCurrency} value={sourceCurrency} name={sourceCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Source Currency</label>
+                            <label htmlFor={sourceCurrency}
+                              className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Source Currency</label>
                             
                             <select
                             onChange={(e) =>setSourceCurrency(e.target.value)} 
                             className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light" 
+                            id={sourceCurrency}
+                            value={sourceCurrency}
+                            name={sourceCurrency}
                             >
                                 <option value="">Select Source Currency</option>
-                                {Object.keys(currecyNames).map((currecy) =>(
-                                   <option className='p-1' key={currecy} value={currecy}>
-                                    {currecyNames[currecy]}
+                                {Object.keys(currencyNames).map((currency) =>(
+                                   <option className='p-1' key={currency} value={currency}>
+                                    {currencyNames[currency]}
                                    </option>
                                 ) )}
                              </select>
-                            <label htmlFor={targetCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">Select Targer Currency</label>
+
+                            <label htmlFor={targetCurrency} className="block mb-3 mt-4 text-sm font-medium text-gray-900 dark:text-white">
+                            Select Targer Currency</label>
+                            
                             <select onChange={(e)=>setTargetCurrency(e.target.value)}
                              className="shadow-sm bg-gray-50 borderborder-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light"
-                            name='targetCurrency' id='targetCurrency'value={targetCurrency}
+                            name={targetCurrency} 
+                            id={targetCurrency}
+                            value={targetCurrency}
                             >   
                                 <option value="">Select Target Currency</option>
-                                {Object.keys(currecyNames).map((currecy) =>(
-                                   <option className='p-1' key={currecy} value={currecy}>
-                                    {currecyNames[currecy]}
+                                {Object.keys(currencyNames).map((currency) =>(
+                                   <option className='p-1' key={currency} value={currency}>
+                                    {currencyNames[currency]}
                                    </option>
                                 ) )}
                              </select>
@@ -116,9 +127,21 @@ export default function Mainpage() {
 
                           </div>
                 </form>
+                
+                
             </section>
+          
+        
         </div>
-        {amountInTargerCurrency}
+        {!loading ? (
+                  <section className='px-2 '>    
+            {amountInSourceCurrency} {currencyNames[sourceCurrency]} is equals to {" "}
+                <span className='text-green-500 font-bold'>
+                {amountInTargetCurrency}
+                </span>
+                 {" "} in {currencyNames[targetCurrency]}
+            </section>
+            ):null}
     </div>
    
   );
